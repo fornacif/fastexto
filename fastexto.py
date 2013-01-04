@@ -6,7 +6,7 @@ from sfrswallow import SMSSender
 
 class SMS(db.Model):
 	username = db.StringProperty(multiline=False)
-	password = db.StringProperty(multiline=False)
+	password = None
 	phonenumber = db.StringProperty(multiline=False)
 	message = db.StringProperty(multiline=True)
 	
