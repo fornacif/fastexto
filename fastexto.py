@@ -19,7 +19,7 @@ class Main(webapp2.RequestHandler):
 				<body>""")
 		
 		self.response.out.write("""
-				<form action="/send" method="post">
+				<form action="/send" method="post" accept-charset="UTF-8">
 					<div>Username : <input type="text" name="username" cols="10"></input></div>
 					<div>Password : <input type="password" name="password" cols="10"></input></div>
 					<div>Phone Number : <input type="text" name="phonenumber" cols="10"></input></div>

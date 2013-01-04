@@ -57,10 +57,10 @@ class SMSSender(object):
         # fill the sms form
         self.br.select_form(nr=0)
         self.br.form["msisdns"] = dest
-        self.br.form["textMessage"] = message
+        self.br.form["textMessage"] = message.encode('utf-8')
         r = self.br.submit()
         
-        if "Confirmer l'envoi" in r.get_data():
+        if "Voulez-vous envoyer ce message ?" in r.get_data():
             # confirm if needed
             data = urllib.urlencode({})
             r = self.br.open(SFR_CONFIRM_URL, data)
