@@ -26,7 +26,7 @@ import mechanize
 import logging
 
 # urls
-SFR_LOGIN_URL = 'http://www.sfr.fr/mon-espace-client'
+SFR_LOGIN_URL = 'https://www.sfr.fr/mon-espace-client'
 SFR_COMPOSE_URL = 'http://www.sfr.fr/xmscomposer/index.html?todo=compose'
 SFR_CONFIRM_URL = 'http://www.sfr.fr/xmscomposer/mc/envoyer-texto-mms/send.html'
 
