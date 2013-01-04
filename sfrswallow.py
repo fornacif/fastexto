@@ -28,7 +28,7 @@ import logging
 # urls
 SFR_LOGIN_URL = 'http://www.sfr.fr/mon-espace-client'
 SFR_COMPOSE_URL = 'http://www.sfr.fr/xmscomposer/index.html?todo=compose'
-SFR_CONFIRM_URL = 'http://www.sfr.fr/xmscomposer/mc/envoyer-texto-mms/confirm.html'
+SFR_CONFIRM_URL = 'http://www.sfr.fr/xmscomposer/mc/envoyer-texto-mms/send.html'
 
 class SMSSender(object):
     """Object to send sms through SFR web interface"""

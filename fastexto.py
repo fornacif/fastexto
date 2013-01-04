@@ -1,12 +1,13 @@
 import webapp2
 import logging
+import md5
 
 from google.appengine.ext import db
 from sfrswallow import SMSSender
 
 class SMS(db.Model):
 	username = db.StringProperty(multiline=False)
-	password = None
+	password = ''
 	phonenumber = db.StringProperty(multiline=False)
 	message = db.StringProperty(multiline=True)
 	
