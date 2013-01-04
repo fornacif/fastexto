@@ -1,4 +1,4 @@
-import webapp2
+﻿import webapp2
 import logging
 import md5
 
@@ -16,18 +16,55 @@ class Main(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'text/html'
 		self.response.out.write("""
 			<html>
-				<body>""")
-		
-		self.response.out.write("""
-				<form action="/send" method="post" accept-charset="UTF-8">
-					<div>Username : <input type="text" name="username" cols="10"></input></div>
-					<div>Password : <input type="password" name="password" cols="10"></input></div>
-					<div>Phone Number : <input type="text" name="phonenumber" cols="10"></input></div>
-					<div>Message : <textarea name="message" rows="3" cols="60"></textarea></div>
-					<div><input type="submit" value="Send Texto"></div>
-				</form>
-			</body>
-		</html>""")
+				<head>
+					<meta charset="utf-8">
+					<title>SMS Sender</title>
+					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+					<meta name="description" content="SMS Sender">
+					<meta name="author" content="François Fornaciari">
+					<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+					<style>
+						body {
+							padding-top: 20px;
+						}
+					</style>
+					<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+				</head>
+				<body>
+					<div class="container">
+						<form action="/send" method="post" accept-charset="UTF-8">
+							<fieldset>
+								<legend>SMS Sender</legend>
+								<label>Username</label>
+								<input type="tel" name="username" placeholder="0102030405" required maxlength="10"/>
+								<label>Password</label>
+								<input type="password" name="password" required/>
+								<label>Phone Number</label>
+								<input type="tel" name="phonenumber" placeholder="0102030405" required maxlength="10"/>
+								<label>Message</label>
+								<textarea id="messageTA" name="message" rows="5"></textarea>
+								<label id="messageLengthLabel">0 SMS</label>
+								<div class="form-actions">
+									<button type="submit" class="btn btn-primary">Send SMS</button>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+					<script src="http://code.jquery.com/jquery-latest.js"></script>
+					<script type="text/javascript">
+						$(document).ready(function(){
+							$("#messageTA").keyup(function() {
+								var currentString = $("#messageTA").val();
+								var numMessages = Math.floor(currentString.length / 140);
+								if ((currentString.length % 140) > 0) {
+									numMessages++;
+								}
+								$("#messageLengthLabel").html(numMessages + " SMS (" + currentString.length + " caractères)");
+							});
+						});
+					</script>
+				</body>
+			</html>""")
 		
 class Send(webapp2.RequestHandler):
 	def post(self):
