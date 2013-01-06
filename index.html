@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>SMS Sender</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="SMS Sender">
+		<meta name="author" content="François Fornaciari">
+		<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+		<style>
+			body {
+				padding-top: 20px;
+			}
+		</style>
+		<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<form action="/send" method="post" accept-charset="UTF-8">
+				<fieldset>
+					<legend>SMS Sender</legend>
+					<label>Username</label>
+					<input type="tel" name="username" placeholder="0102030405" maxlength="10"/>
+					<label>Password</label>
+					<input type="password" name="password"/>
+					<label>Phone Number</label>
+					<input type="tel" name="phonenumber" placeholder="0102030405" maxlength="10"/>
+					<label>Message</label>
+					<textarea id="message" name="message" rows="5"></textarea>
+					<label id="messageLengthLabel">0 SMS(0 chars)</label>
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary">Send SMS</button>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("#message").keyup(function() {
+					var currentString = $("#message").val();
+					var numMessages = Math.floor(currentString.length / 140);
+					if ((currentString.length % 140) > 0) {
+						numMessages++;
+					}
+					$("#messageLengthLabel").html(numMessages + " SMS (" + currentString.length + " chars)");
+				});
+			});
+		</script>
+	</body>
+</html>
