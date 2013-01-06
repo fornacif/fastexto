@@ -5,8 +5,13 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
 - url: /bootstrap
   static_dir: bootstrap
+- url: /css
+  static_dir: css
 - url: /.*
   script: fastexto.app
   

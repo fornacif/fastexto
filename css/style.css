@@ -1,0 +1,8 @@
+body {
+	padding-top: 60px;
+}
+
+label.error { 
+	color: red;
+	padding-left: .5em;
+}

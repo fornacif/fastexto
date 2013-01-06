@@ -6,12 +6,8 @@
 		<meta name="description" content="SMS Sender">
 		<meta name="author" content="François Fornaciari">
 		<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
-		<style>
-			body {
-				padding-top: 60px;
-			}
-		</style>
 		<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="./css/style.css" rel="stylesheet">
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -36,12 +32,12 @@
       </div>
     </div>
 		<div class="container">
-			<form action="/account" method="post" accept-charset="UTF-8">
+			<form id="accountForm" action="/account" method="post" accept-charset="UTF-8">
 				<fieldset>
 					<label>Username</label>
-					<input type="tel" name="username" value="{{ account.username }}" placeholder="0102030405" maxlength="10"/>
+					<input type="tel" name="username" value="{{ account.username }}" placeholder="0102030405" maxlength="10" class="required digits"/>
 					<label>Password</label>
-					<input type="password" name="password" value="{{ account.password }}"/>
+					<input type="password" name="password" value="{{ account.password }}" class="required"/>
 					<div class="form-actions">
 						<button type="submit" class="btn btn-primary">Update</button>
 					</div>
@@ -53,5 +49,11 @@
 			</div>
 		</div>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("#accountForm").validate();
+			});
+		</script>
 	</body>
 </html>
