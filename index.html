@@ -8,16 +8,36 @@
 		<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
 		<style>
 			body {
-				padding-top: 20px;
+				padding-top: 60px;
 			}
 		</style>
 		<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 	</head>
 	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">SMS Sender</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">Account</a></li>
+            </ul>
+            <p class="navbar-text pull-right">
+              {{ nickname }} (<a href="{{ logoutURL }}" class="navbar-link">loug out</a>)
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 		<div class="container">
 			<form action="/send" method="post" accept-charset="UTF-8">
 				<fieldset>
-					<legend>SMS Sender</legend>
 					<label>Username</label>
 					<input type="tel" name="username" placeholder="0102030405" maxlength="10"/>
 					<label>Password</label>
@@ -26,12 +46,16 @@
 					<input type="tel" name="phonenumber" placeholder="0102030405" maxlength="10"/>
 					<label>Message</label>
 					<textarea id="message" name="message" rows="5"></textarea>
-					<label id="messageLengthLabel">0 SMS(0 chars)</label>
+					<label id="messageLengthLabel">0 SMS (0 chars)</label>
 					<div class="form-actions">
 						<button type="submit" class="btn btn-primary">Send SMS</button>
 					</div>
 				</fieldset>
 			</form>
+			<hr>
+			<div class="footer">
+				<p>&copy; fornacif 2013</p>
+			</div>
 		</div>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<script type="text/javascript">
@@ -39,7 +63,7 @@
 				$("#message").keyup(function() {
 					var currentString = $("#message").val();
 					var numMessages = Math.floor(currentString.length / 140);
-					if ((currentString.length % 140) > 0) {
+					if ((currentString.length % 160) > 0) {
 						numMessages++;
 					}
 					$("#messageLengthLabel").html(numMessages + " SMS (" + currentString.length + " chars)");
