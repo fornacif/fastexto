@@ -20,16 +20,16 @@ class SMS(db.Model):
 	
 class Authentication:
 	@staticmethod
-	def authenticate():
+	def authenticate(self):
 		user = users.get_current_user()
 		if user is None:
-			redirect(users.create_login_url(self.request.uri))
+			self.redirect(users.create_login_url(self.request.uri))
 		else:
 			return user
 	
 class Main(webapp2.RequestHandler):
 	def get(self):
-		user = Authentication.authenticate()
+		user = Authentication.authenticate(self)
 		if user:
 			template_values = {
 				"nickname": user.nickname(),
@@ -40,7 +40,7 @@ class Main(webapp2.RequestHandler):
 		
 class Send(webapp2.RequestHandler):
 	def post(self):
-		user = Authentication.authenticate()
+		user = Authentication.authenticate(self)
 		if user:
 			accountKey = db.Key.from_path('Account', user.user_id())
 			account = db.get(accountKey)
@@ -62,7 +62,7 @@ class Send(webapp2.RequestHandler):
 			
 class AccountManager(webapp2.RequestHandler):
 	def get(self):
-		user = Authentication.authenticate()
+		user = Authentication.authenticate(self)
 		if user:
 			accountKey = db.Key.from_path('Account', user.user_id())
 			account = db.get(accountKey)
@@ -74,7 +74,7 @@ class AccountManager(webapp2.RequestHandler):
 			template = jinja_environment.get_template("account.html")
 			self.response.out.write(template.render(template_values))
 	def post(self):
-		user = Authentication.authenticate()
+		user = Authentication.authenticate(self)
 		if user:
 			account = Account(key_name = user.user_id())
 			account.username = self.request.get("username")
