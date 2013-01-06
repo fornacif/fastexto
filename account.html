@@ -25,8 +25,8 @@
           <a class="brand" href="/">SMS Sender</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
-              <li><a href="/account">Account</a></li>
+              <li><a href="/">Home</a></li>
+              <li class="active"><a href="/account">Account</a></li>
             </ul>
             <p class="navbar-text pull-right">
               {{ nickname }} (<a href="{{ logoutURL }}" class="navbar-link">log out</a>)
@@ -36,15 +36,14 @@
       </div>
     </div>
 		<div class="container">
-			<form action="/send" method="post" accept-charset="UTF-8">
+			<form action="/account" method="post" accept-charset="UTF-8">
 				<fieldset>
-					<label>Phone Number</label>
-					<input type="tel" name="phonenumber" placeholder="0102030405" maxlength="10"/>
-					<label>Message</label>
-					<textarea id="message" name="message" rows="5"></textarea>
-					<label id="messageLengthLabel">0 SMS (0 chars)</label>
+					<label>Username</label>
+					<input type="tel" name="username" value="{{ account.username }}" placeholder="0102030405" maxlength="10"/>
+					<label>Password</label>
+					<input type="password" name="password" value="{{ account.password }}"/>
 					<div class="form-actions">
-						<button type="submit" class="btn btn-primary">Send SMS</button>
+						<button type="submit" class="btn btn-primary">Update</button>
 					</div>
 				</fieldset>
 			</form>
@@ -54,17 +53,5 @@
 			</div>
 		</div>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-				$("#message").keyup(function() {
-					var currentString = $("#message").val();
-					var numMessages = Math.floor(currentString.length / 140);
-					if ((currentString.length % 160) > 0) {
-						numMessages++;
-					}
-					$("#messageLengthLabel").html(numMessages + " SMS (" + currentString.length + " chars)");
-				});
-			});
-		</script>
 	</body>
 </html>

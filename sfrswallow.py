@@ -27,7 +27,7 @@ class SMSSender(object):
         # check the sucess of the login
         assert "Bienvenue dans votre Espace Client" in r.get_data()
     
-    def sendsms(self, dest, message):
+    def send(self, dest, message):
         """Send a message to dest"""
         # open the compose page
         self.br.open(SFR_COMPOSE_URL)
