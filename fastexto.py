@@ -56,7 +56,7 @@ class Send(webapp2.RequestHandler):
 					sender.send(sms.phonenumber, sms.message)	
 					sms.put()
 			except AssertionError:
-				logging.info("Bad credentials for %s", user.nickname())
+				logging.info("Error sending message for %s", user.nickname())
 
 		self.redirect("/")
 			
