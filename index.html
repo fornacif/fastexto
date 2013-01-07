@@ -58,7 +58,7 @@
 				
 				$("#message").keyup(function() {
 					var currentString = $("#message").val();
-					var numMessages = Math.floor(currentString.length / 140);
+					var numMessages = Math.floor(currentString.length / 160);
 					if ((currentString.length % 160) > 0) {
 						numMessages++;
 					}
