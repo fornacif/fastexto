@@ -73,12 +73,13 @@
 						$.blockUI({"message" : "<h3>Sending SMS...</h3>"});
 					},
 					success: function () {
-						$('#sendForm').clearForm();
+						$("#sendForm").clearForm();
 						$.unblockUI();
+						$("#messageLengthLabel").text("0 SMS (0 chars)");
 					}
 				};
 		
-				$('#sendForm').ajaxForm(options);
+				$("#sendForm").ajaxForm(options);
 			});
 		</script>
 	</body>
