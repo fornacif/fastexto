@@ -51,9 +51,23 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
 		<script src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
 		<script src="./bootstrap/js/bootstrap.min.js"></script>
+		<script src="http://malsup.github.com/jquery.form.js"></script>
+		<script src="http://malsup.github.com/jquery.blockUI.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 				$("#accountForm").validate();
+
+				var options = {
+					beforeSubmit: function () {
+						$.blockUI({"message" : "<h3>Updating account...</h3>"});
+					},
+					success: function () {
+						$('#sendForm').clearForm();
+						$.unblockUI();
+					}
+				};
+			
+				$('#accountForm').ajaxForm(options);
 			});
 		</script>
 	</body>

@@ -53,6 +53,8 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
 		<script src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
 		<script src="./bootstrap/js/bootstrap.min.js"></script>
+		<script src="http://malsup.github.com/jquery.form.js"></script>
+		<script src="http://malsup.github.com/jquery.blockUI.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 				$("#sendForm").validate();
@@ -65,6 +67,18 @@
 					}
 					$("#messageLengthLabel").html(numMessages + " SMS (" + currentString.length + " chars)");
 				});
+			
+				var options = {
+					beforeSubmit: function () {
+						$.blockUI({"message" : "<h3>Sending SMS...</h3>"});
+					},
+					success: function () {
+						$('#sendForm').clearForm();
+						$.unblockUI();
+					}
+				};
+		
+				$('#sendForm').ajaxForm(options);
 			});
 		</script>
 	</body>

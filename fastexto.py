@@ -57,8 +57,6 @@ class Send(webapp2.RequestHandler):
 					sms.put()
 			except AssertionError:
 				logging.info("Error sending message for %s", user.nickname())
-
-		self.redirect("/")
 			
 class AccountManager(webapp2.RequestHandler):
 	def get(self):
@@ -80,8 +78,6 @@ class AccountManager(webapp2.RequestHandler):
 			account.username = self.request.get("username")
 			account.password = self.request.get("password")
 			account.put()
-			
-			self.redirect("/")
 
 app = webapp2.WSGIApplication([
 	("/", Main),
