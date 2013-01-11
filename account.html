@@ -6,6 +6,7 @@
 		<meta name="description" content="SMS Sender">
 		<meta name="author" content="François Fornaciari">
 		<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="./jgrowl/jquery.jgrowl.css" rel="stylesheet">
 		<link href="./css/style.css" rel="stylesheet">
 		<link href="./bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 	</head>
@@ -52,17 +53,16 @@
 		<script src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
 		<script src="./bootstrap/js/bootstrap.min.js"></script>
 		<script src="http://malsup.github.com/jquery.form.js"></script>
-		<script src="http://malsup.github.com/jquery.blockUI.js"></script>
+		<script src="./jgrowl/jquery.jgrowl_minimized.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 				$("#accountForm").validate();
 
 				var options = {
-					beforeSubmit: function () {
-						$.blockUI({"message" : "<h3>Updating account...</h3>"});
-					},
 					success: function () {
-						$.unblockUI();
+						$.jGrowl("<h5>Account updated</h5>", { 
+							position: "bottom-left"
+						});
 					}
 				};
 			
