@@ -6,7 +6,8 @@ import os
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from sfrswallow import SMSSender
+from sfr.browser import SfrBrowser
+from weboob.capabilities.messages import Message,Thread
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -51,13 +52,13 @@ class Send(webapp2.RequestHandler):
 		
 			try:
 				if account and account.username and account.password:
-					sender = SMSSender(account.username, account.password)
+					browser = SfrBrowser(account.username, account.password)
 					logging.info("Sending message to %s", str(sms.phonenumber))
-					sender.send(sms.phonenumber, sms.message)	
+					browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
 					sms.put()
-			except AssertionError:
+			except:
 				logging.info("Error sending message for %s", user.nickname())
-			
+						
 class AccountManager(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
