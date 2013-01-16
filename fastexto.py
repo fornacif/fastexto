@@ -1,6 +1,5 @@
 ﻿import webapp2
 import logging
-import md5
 import jinja2
 import os
 
@@ -14,6 +13,10 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.di
 class Account(db.Model):
 	username = db.StringProperty(multiline=False)
 	password = db.StringProperty(multiline=False)
+	
+class Contact(db.Model):
+	name = db.StringProperty(multiline=False)
+	phonenumber = db.StringProperty(multiline=False)
 	
 class SMS(db.Model):
 	phonenumber = db.StringProperty(multiline=False)
@@ -32,12 +35,34 @@ class Main(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
+			contacts = Contact.all().run()
 			template_values = {
+				"contacts": contacts,
 				"nickname": user.nickname(),
 				"logoutURL": users.create_logout_url("/")
 			}
 			template = jinja_environment.get_template("index.html")
 			self.response.out.write(template.render(template_values))
+
+class Contacts(webapp2.RequestHandler):
+	def get(self):
+		user = Authentication.authenticate(self)
+		if user:
+			contacts = Contact.all().run()
+			template_values = {
+				"contacts": contacts,
+				"nickname": user.nickname(),
+				"logoutURL": users.create_logout_url("/")
+			}
+			template = jinja_environment.get_template("contacts.html")
+			self.response.out.write(template.render(template_values))
+	def post(self):
+		user = Authentication.authenticate(self)
+		if user:
+			contact = Contact()
+			contact.name = self.request.get("name")
+			contact.phonenumber = self.request.get("phonenumber")
+			contact.put()
 		
 class Send(webapp2.RequestHandler):
 	def post(self):
@@ -45,9 +70,14 @@ class Send(webapp2.RequestHandler):
 		if user:
 			accountKey = db.Key.from_path('Account', user.user_id())
 			account = db.get(accountKey)
+			
+			name = self.request.get("name")
+			
+			contact = Contact.all()
+			contact.filter("name =", name)
 		
 			sms = SMS()
-			sms.phonenumber = self.request.get("phonenumber")
+			sms.phonenumber = contact.run().next().phonenumber
 			sms.message = self.request.get("message")
 		
 			try:
@@ -83,5 +113,6 @@ class AccountManager(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
 	("/", Main),
 	("/send", Send),
+	("/contacts", Contacts),
 	("/account", AccountManager)
 ], debug=True)
