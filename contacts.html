@@ -31,16 +31,16 @@
 		</div>
 	</div>
 	<div class="container">
-		<form id="contactForm" action="/contacts" method="post"
+		<form id="contactForm" action="/contact" method="post"
 			accept-charset="UTF-8">
 			<fieldset>
 				<label>Name</label> 
-					<input name="name" placeholder="Name" class="required" />
-					<label>Phone Number</label>
-					<input type="tel" name="phonenumber" placeholder="0102030405" maxlength="10" class="required digits" />
-					<div class="form-actions">
-						<button type="submit" class="btn btn-primary">Add contact</button>
-					</div>
+				<input type="text" name="name" placeholder="Name" class="required" />
+				<label>Phone Number</label>
+				<input type="tel" name="phonenumber" placeholder="0102030405" maxlength="10" class="required digits" />
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Add contact</button>
+				</div>
 			</fieldset>
 		</form>
 		<hr>
@@ -50,13 +50,15 @@
 				<tr>
 					<th>Name</th>
 					<th>Phone Number</th>
+					<th>Action</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for contact in contacts %}
 				<tr>
 					<td>{{ contact.name }}</td>
-					<td>{{ contact.phonenumber }}</td>
+					<td>{{ contact.key().name() }}</td>
+					<td><a href="/contact/{{ contact.key().name() }}"><img src="icons/delete-16x16.png" /></a></td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -74,17 +76,6 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#contactForm").validate();
-
-			var options = {
-				success: function () {
-					$.jGrowl("<h5>Contact added</h5>", { 
-						position: "bottom-left"
-					});
-					$("#contactForm").clearForm();
-				}
-			};
-		
-			$("#contactForm").ajaxForm(options);
 		});
 	</script>
 </body>

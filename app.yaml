@@ -10,6 +10,8 @@ handlers:
   upload: favicon.ico
 - url: /bootstrap
   static_dir: bootstrap
+- url: /icons
+  static_dir: icons
 - url: /jgrowl
   static_dir: jgrowl
 - url: /css

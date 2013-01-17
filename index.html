@@ -7,6 +7,7 @@
 		<meta name="description" content="SMS Sender">
 		<meta name="author" content="François Fornaciari">
 		<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="./jgrowl/jquery.jgrowl.css" rel="stylesheet">
 		<link href="./css/style.css" rel="stylesheet">
 		<link href="./bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 	</head>
@@ -32,10 +33,10 @@
 			<form id="sendForm" action="/send" method="post" accept-charset="UTF-8" autocomplete="off">
 				<fieldset>
 					<label>Contact</label>
-					<input list="contacts" name="name" class="required"/>
+					<input type="text" list="contacts" name="name" class="required"/>
 					<datalist id="contacts">
 						{% for contact in contacts %}
-						<option label="{{ contact.phonenumber }}" value="{{ contact.name }}" />
+						<option label="{{ contact.key().name() }}" value="{{ contact.name }}" />
 						{% endfor %}
 					</datalist>
 					<label>Message</label>

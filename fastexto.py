@@ -16,7 +16,6 @@ class Account(db.Model):
 	
 class Contact(db.Model):
 	name = db.StringProperty(multiline=False)
-	phonenumber = db.StringProperty(multiline=False)
 	
 class SMS(db.Model):
 	phonenumber = db.StringProperty(multiline=False)
@@ -44,7 +43,7 @@ class Main(webapp2.RequestHandler):
 			template = jinja_environment.get_template("index.html")
 			self.response.out.write(template.render(template_values))
 
-class Contacts(webapp2.RequestHandler):
+class ListContacts(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
@@ -56,13 +55,25 @@ class Contacts(webapp2.RequestHandler):
 			}
 			template = jinja_environment.get_template("contacts.html")
 			self.response.out.write(template.render(template_values))
+			
+class AddContact(webapp2.RequestHandler):
 	def post(self):
 		user = Authentication.authenticate(self)
 		if user:
-			contact = Contact()
+			phonenumber = self.request.get("phonenumber")
+			contact = Contact(key_name = phonenumber)
 			contact.name = self.request.get("name")
-			contact.phonenumber = self.request.get("phonenumber")
 			contact.put()
+			return self.redirect('/contacts')
+			
+class DeleteContact(webapp2.RequestHandler):
+	def get(self, phonenumber):
+		user = Authentication.authenticate(self)
+		if user:
+			contactKey = db.Key.from_path('Contact', phonenumber)
+			contact = db.get(contactKey)
+			contact.delete()
+			return self.redirect('/contacts')
 		
 class Send(webapp2.RequestHandler):
 	def post(self):
@@ -77,7 +88,7 @@ class Send(webapp2.RequestHandler):
 			contact.filter("name =", name)
 		
 			sms = SMS()
-			sms.phonenumber = contact.run().next().phonenumber
+			sms.phonenumber = contact.run().next().key().name()
 			sms.message = self.request.get("message")
 		
 			try:
@@ -89,7 +100,7 @@ class Send(webapp2.RequestHandler):
 			except:
 				logging.info("Error sending message for %s", user.nickname())
 						
-class AccountManager(webapp2.RequestHandler):
+class ManageAccount(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
@@ -111,8 +122,10 @@ class AccountManager(webapp2.RequestHandler):
 			account.put()
 
 app = webapp2.WSGIApplication([
-	("/", Main),
-	("/send", Send),
-	("/contacts", Contacts),
-	("/account", AccountManager)
+	('/', Main),
+	('/send', Send),
+	('/contacts', ListContacts),
+	('/contact', AddContact),
+	('/contact/(\d+)', DeleteContact),
+	('/account', ManageAccount)
 ], debug=True)
