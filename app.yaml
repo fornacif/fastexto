@@ -8,14 +8,8 @@ handlers:
 - url: /favicon.ico
   static_files: favicon.ico
   upload: favicon.ico
-- url: /bootstrap
-  static_dir: bootstrap
-- url: /icons
-  static_dir: icons
-- url: /jgrowl
-  static_dir: jgrowl
-- url: /css
-  static_dir: css
+- url: /static
+  static_dir: static
 - url: /.*
   script: fastexto.app
   

@@ -1,89 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
+<!doctype html>
+<html ng-app="fastexto">
+  <head>
 		<meta charset="utf-8">
-		<title>SMS Sender</title>
+		<title>Fast Texto</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="SMS Sender">
+		<meta name="description" content="Fast Texto">
 		<meta name="author" content="François Fornaciari">
-		<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="./jgrowl/jquery.jgrowl.css" rel="stylesheet">
-		<link href="./css/style.css" rel="stylesheet">
-		<link href="./bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="/">SMS Sender</a>
-          <div class="nav-collapse collapse">
-            <p class="navbar-text pull-right">
-              {{ nickname }} (<a href="{{ logoutURL }}" class="navbar-link">log out</a>)
-            </p>
-            <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
-              <li><a href="/contacts">Contacts</a></li>
-              <li><a href="/account">Account</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-		<div class="container">
-			<form id="sendForm" action="/send" method="post" accept-charset="UTF-8" autocomplete="off">
-				<fieldset>
-					<label>Contact</label>
-					<input type="text" list="contacts" name="name" class="required"/>
-					<datalist id="contacts">
-						{% for contact in contacts %}
-						<option label="{{ contact.key().name() }}" value="{{ contact.name }}" />
-						{% endfor %}
-					</datalist>
-					<label>Message</label>
-						<textarea id="message" name="message" rows="5" class="required"></textarea>
-					<label id="messageLengthLabel">0 SMS (0 chars)</label>
-					<div class="form-actions">
-						<button type="submit" class="btn btn-primary">Send SMS</button>
+		<link href="static/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="static/libs/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link  href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet">
+		<link href="http://ivaynberg.github.com/select2/select2-3.2/select2.css" rel="stylesheet"/>
+		<link href="static/libs/angular-ui/angular-ui.min.css" rel="stylesheet">
+		<link href="static/css/fastexto.css" rel="stylesheet">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.min.js"></script>
+    <script src="static/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/libs/angular-ui/angular-ui.min.js"></script>
+		<script src="http://malsup.github.com/jquery.blockUI.js"></script>
+		<script src="http://ivaynberg.github.com/select2/select2-3.2/select2.js"></script>
+		<script src="http://angular-ui.github.com/lib/maskedinput/jquery.maskedinput.js"></script>
+		<script src="static/js/controllers.js"></script>
+		<script src="static/js/services.js"></script>
+  </head>
+  <body>
+		<div class="navbar navbar-inverse navbar-fixed-top"> 
+			<div class="navbar-inner"> 
+				<div class="container">
+					<a class="brand" href="#/">Fast Texto</a>
+					<div class="nav-collapse collapse">
+						<p class="navbar-text pull-right">	
+							{{nickname}} (<a href="{{logoutURL}}" class="navbar-link">log out</a>)
+						</p>
+						<ul class="nav" ng-controller="MenuController">
+							<li ng-class="{active:isActive('/')}"><a href="#/">Send</a></li>
+							<li ng-class="{active:isActive('/contacts')}"><a href="#/contacts">Contacts</a></li>
+							<li ng-class="{active:isActive('/account')}"><a href="#/account">Account</a></li>
+						</ul>
 					</div>
-				
-					</fieldset>
-			</form>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div ng-view></div>
 			<hr>
 			<div class="footer">
 				<p>&copy; fornacif 2013</p>
 			</div>
 		</div>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-		<script src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
-		<script src="./bootstrap/js/bootstrap.min.js"></script>
-		<script src="http://malsup.github.com/jquery.form.js"></script>
-		<script src="http://malsup.github.com/jquery.blockUI.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-				$("#sendForm").validate();
-				
-				$("#message").keyup(function() {
-					var currentString = $("#message").val();
-					var numMessages = Math.floor(currentString.length / 160);
-					if ((currentString.length % 160) > 0) {
-						numMessages++;
-					}
-					$("#messageLengthLabel").html(numMessages + " SMS (" + currentString.length + " chars)");
-				});
-			
-				var options = {
-					beforeSubmit: function () {
-						$.blockUI({"message" : "<h3>Sending SMS...</h3>"});
-					},
-					success: function () {
-						$("#sendForm").clearForm();
-						$.unblockUI();
-						$("#messageLengthLabel").text("0 SMS (0 chars)");
-					}
-				};
-		
-				$("#sendForm").ajaxForm(options);
-			});
-		</script>
-	</body>
+  </body>
 </html>

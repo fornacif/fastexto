@@ -2,25 +2,35 @@
 import logging
 import jinja2
 import os
+import json
 
 from google.appengine.ext import db
 from google.appengine.api import users
+
 from sfr.browser import SfrBrowser
 from weboob.capabilities.messages import Message,Thread
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
-class Account(db.Model):
-	username = db.StringProperty(multiline=False)
-	password = db.StringProperty(multiline=False)
-	
-class Contact(db.Model):
-	name = db.StringProperty(multiline=False)
-	
 class SMS(db.Model):
 	phonenumber = db.StringProperty(multiline=False)
 	message = db.StringProperty(multiline=True)
-	
+
+class Contact(db.Model):
+	name = db.StringProperty(multiline=False)
+	phonenumber = db.StringProperty(multiline=False)
+	def to_dict(self):
+		properties = {"id": self.key().id()}
+		for key in self.properties().keys():
+			properties.update({key:unicode(getattr(self, key))})
+		return properties
+
+class Account(db.Model):
+	username = db.StringProperty(multiline=False)
+	password = db.StringProperty(multiline=False)
+	def to_dict(self):
+		return dict([(p, unicode(getattr(self, p))) for p in self.properties()])
+
 class Authentication:
 	@staticmethod
 	def authenticate(self):
@@ -30,51 +40,17 @@ class Authentication:
 		else:
 			return user
 	
-class Main(webapp2.RequestHandler):
+class Index(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
-			contacts = Contact.all().run()
 			template_values = {
-				"contacts": contacts,
 				"nickname": user.nickname(),
 				"logoutURL": users.create_logout_url("/")
 			}
 			template = jinja_environment.get_template("index.html")
 			self.response.out.write(template.render(template_values))
-
-class ListContacts(webapp2.RequestHandler):
-	def get(self):
-		user = Authentication.authenticate(self)
-		if user:
-			contacts = Contact.all().run()
-			template_values = {
-				"contacts": contacts,
-				"nickname": user.nickname(),
-				"logoutURL": users.create_logout_url("/")
-			}
-			template = jinja_environment.get_template("contacts.html")
-			self.response.out.write(template.render(template_values))
 			
-class AddContact(webapp2.RequestHandler):
-	def post(self):
-		user = Authentication.authenticate(self)
-		if user:
-			phonenumber = self.request.get("phonenumber")
-			contact = Contact(key_name = phonenumber)
-			contact.name = self.request.get("name")
-			contact.put()
-			return self.redirect('/contacts')
-			
-class DeleteContact(webapp2.RequestHandler):
-	def get(self, phonenumber):
-		user = Authentication.authenticate(self)
-		if user:
-			contactKey = db.Key.from_path('Contact', phonenumber)
-			contact = db.get(contactKey)
-			contact.delete()
-			return self.redirect('/contacts')
-		
 class Send(webapp2.RequestHandler):
 	def post(self):
 		user = Authentication.authenticate(self)
@@ -82,50 +58,75 @@ class Send(webapp2.RequestHandler):
 			accountKey = db.Key.from_path('Account', user.user_id())
 			account = db.get(accountKey)
 			
-			name = self.request.get("name")
-			
-			contact = Contact.all()
-			contact.filter("name =", name)
-		
+			params = json.loads(self.request.body)
+
 			sms = SMS()
-			sms.phonenumber = contact.run().next().key().name()
-			sms.message = self.request.get("message")
+			sms.phonenumber = params['phonenumber']
+			sms.message = params['message']
 		
 			try:
 				if account and account.username and account.password:
 					browser = SfrBrowser(account.username, account.password)
-					logging.info("Sending message to %s", str(sms.phonenumber))
+					logging.info("Sending message to %s", sms.phonenumber)
 					browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
 					sms.put()
 			except:
 				logging.info("Error sending message for %s", user.nickname())
-						
-class ManageAccount(webapp2.RequestHandler):
+				raise
+				
+class Account(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
 			accountKey = db.Key.from_path('Account', user.user_id())
 			account = db.get(accountKey)
-			template_values = {
-				"account": account,
-				"nickname": user.nickname(),
-				"logoutURL": users.create_logout_url("/")
-			}
-			template = jinja_environment.get_template("account.html")
-			self.response.out.write(template.render(template_values))
+			self.response.headers['Content-Type'] = 'application/json'
+			self.response.out.write(json.dumps(account.to_dict()))
 	def post(self):
 		user = Authentication.authenticate(self)
 		if user:
-			account = Account(key_name = user.user_id())
-			account.username = self.request.get("username")
-			account.password = self.request.get("password")
-			account.put()
+			accountKey = db.Key.from_path('Account', user.user_id())
+			account = db.get(accountKey)
+			
+			params = json.loads(self.request.body)
+			
+			account.username = params['username'];
+			account.password = params['password'];
+			account.put();
+			
+class Contacts(webapp2.RequestHandler):
+	def get(self):
+		user = Authentication.authenticate(self)
+		if user:
+			contacts = Contact.all()
 
+			self.response.headers['Content-Type'] = 'application/json'
+			self.response.out.write(json.dumps([p.to_dict() for p in contacts]))
+			
+class AddContact(webapp2.RequestHandler):
+	def post(self):
+		user = Authentication.authenticate(self)
+		if user:
+			params = json.loads(self.request.body)
+			
+			contact = Contact()
+			contact.name = params['name'];
+			contact.phonenumber = params['phonenumber'];
+			contact.put()
+			
+class DeleteContact(webapp2.RequestHandler):
+	def get(self, id):
+		user = Authentication.authenticate(self)
+		if user:
+			logging.info("Deleting contact %s", id)
+			contact = Contact.get_by_id(int(id))
+			contact.delete()
+			
 app = webapp2.WSGIApplication([
-	('/', Main),
+	('/', Index),
 	('/send', Send),
-	('/contacts', ListContacts),
 	('/contact', AddContact),
 	('/contact/(\d+)', DeleteContact),
-	('/account', ManageAccount)
+	('/contacts', Contacts),
+	('/account', Account),
 ], debug=True)

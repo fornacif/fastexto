@@ -1,0 +1,15 @@
+<form name="sendForm" ng-submit="sendSMS()" accept-charset="UTF-8" autocomplete="off">
+	<fieldset>
+		<label>Contact </label>
+		<select ui-select2 ng-model="phonenumber" data-placeholder="Select Contact" style="width:220px">
+			<option></option>
+			<option ng-repeat="contact in contacts" value="{{contact.phonenumber}}">{{contact.name}}</option>
+		</select>
+		<label>Message</label>
+		<textarea ng-model="message" ng-change="change()" rows="5" required></textarea>
+		<label>{{messageNumber}} SMS ({{messageLength}} chars)</label>
+		<div class="form-actions">
+			<button type="submit" class="btn btn-primary" ng-disabled="sendForm.$invalid">Send SMS</button>
+		</div>
+	</fieldset>
+</form>
