@@ -1,5 +1,6 @@
 ﻿import webapp2
 import logging
+import datetime
 import jinja2
 import os
 import json
@@ -15,6 +16,8 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.di
 class SMS(db.Model):
 	phonenumber = db.StringProperty(multiline=False)
 	message = db.StringProperty(multiline=True)
+	username = db.StringProperty(multiline=False)
+	date = db.DateTimeProperty()
 
 class Contact(db.Model):
 	name = db.StringProperty(multiline=False)
@@ -59,16 +62,18 @@ class Send(webapp2.RequestHandler):
 			account = db.get(accountKey)
 			
 			params = json.loads(self.request.body)
-
-			sms = SMS()
-			sms.phonenumber = params['phonenumber']
-			sms.message = params['message']
 		
 			try:
-				if account and account.username and account.password:
-					browser = SfrBrowser(account.username, account.password)
+				if account and account.username and account.password:	
+					sms = SMS()
+					sms.phonenumber = params['phonenumber']
+					sms.message = params['message']
+					sms.username = account.username
+					sms.date = datetime.datetime.now()
+				
+					#browser = SfrBrowser(account.username, account.password)
 					logging.info("Sending message to %s", sms.phonenumber)
-					browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
+					#browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
 					sms.put()
 			except:
 				logging.info("Error sending message for %s", user.nickname())
