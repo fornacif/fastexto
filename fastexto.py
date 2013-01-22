@@ -71,9 +71,9 @@ class Send(webapp2.RequestHandler):
 					sms.username = account.username
 					sms.date = datetime.datetime.now()
 				
-					#browser = SfrBrowser(account.username, account.password)
+					browser = SfrBrowser(account.username, account.password)
 					logging.info("Sending message to %s", sms.phonenumber)
-					#browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
+					browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
 					sms.put()
 			except:
 				logging.info("Error sending message for %s", user.nickname())
