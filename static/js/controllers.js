@@ -71,9 +71,9 @@ function ContactsController($scope, Contacts, Contact) {
 			function () {  
 				$.unblockUI();
 			});
-  };
-  
-  $scope.remove = function(id) {
+	};
+	
+	$scope.remove = function(id) {
 		$.blockUI({"message" : "<h3>Deleting contact...</h3>"});
 		Contact.remove({id:id},
 			function () {
@@ -83,13 +83,19 @@ function ContactsController($scope, Contacts, Contact) {
 			function () {  
 				$.unblockUI();
 			});
-  };
+	};
 }
 
 function AccountController($scope, Account) {
-  $scope.account = Account.query();
-  
-  $scope.update = function() {
+	$.blockUI({"message" : "<h3>Loading account...</h3>"});
+	$scope.account = Account.query({}, function () {
+		$.unblockUI();
+	},
+	function () {  
+		$.unblockUI();
+	});
+
+	$scope.update = function() {
 		$.blockUI({"message" : "<h3>Updating account...</h3>"});
 		Account.update($scope.account,
 			function () {
@@ -98,7 +104,7 @@ function AccountController($scope, Account) {
 			function () {  
 				$.unblockUI();
 			});
-  };
+	};
 }
 
 function loadContacts (Contacts) {
