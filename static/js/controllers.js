@@ -26,16 +26,16 @@ function SendController($scope, Contacts, Send) {
   }
 
 	$scope.reset();
-	$scope.contacts = Contacts.query();
+	$scope.contacts = loadContacts(Contacts);
 	
 	$scope.sendSMS = function() {
 		$.blockUI({"message" : "<h3>Sending SMS...</h3>"});
 		Send.send({phonenumber: $scope.phonenumber, message: $scope.message},
-			function (data) {
+			function () {
 				$.unblockUI();
 				$scope.reset();
 			},
-			function (data) {  
+			function () {  
 				$.unblockUI();
 			});
   };
@@ -58,17 +58,17 @@ function ContactsController($scope, Contacts, Contact) {
 		$scope.phonenumber = "";	
   }
 
-	$scope.contacts = Contacts.query();
+	$scope.contacts = loadContacts(Contacts);
 	
 	$scope.add = function() {
 		$.blockUI({"message" : "<h3>Adding contact...</h3>"});
 		Contact.add({name: $scope.name, phonenumber: $scope.phonenumber},
-			function (data) {
+			function () {
 				$.unblockUI();
 				$scope.reset();
-				$scope.contacts = Contacts.query();
+				$scope.contacts = loadContacts(Contacts);
 			},
-			function (data) {  
+			function () {  
 				$.unblockUI();
 			});
   };
@@ -76,11 +76,11 @@ function ContactsController($scope, Contacts, Contact) {
   $scope.remove = function(id) {
 		$.blockUI({"message" : "<h3>Deleting contact...</h3>"});
 		Contact.remove({id:id},
-			function (data) {
+			function () {
 				$.unblockUI();
-				$scope.contacts = Contacts.query();
+				$scope.contacts = loadContacts(Contacts);
 			},
-			function (data) {  
+			function () {  
 				$.unblockUI();
 			});
   };
@@ -92,11 +92,22 @@ function AccountController($scope, Account) {
   $scope.update = function() {
 		$.blockUI({"message" : "<h3>Updating account...</h3>"});
 		Account.update($scope.account,
-			function (data) {
+			function () {
 				$.unblockUI();
 			},
-			function (data) {  
+			function () {  
 				$.unblockUI();
 			});
   };
+}
+
+function loadContacts (Contacts) {
+	$.blockUI({"message" : "<h3>Loading contacts...</h3>"});
+	return Contacts.query({},
+			function () {
+				$.unblockUI();
+			},
+			function () {  
+				$.unblockUI();
+			});
 }
