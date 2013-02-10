@@ -43,7 +43,7 @@ function SendController($scope, Contacts, Send) {
   $scope.change = function() {
 		if ($scope.message) {
 			$scope.messageLength = $scope.message.length;
-			$scope.messageNumber = Math.round($scope.messageLength / 160) + 1;
+			$scope.messageNumber = Math.ceil($scope.messageLength / 160);
 		} else {
 			$scope.messageNumber = 0;
 			$scope.messageLength = 0;
