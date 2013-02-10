@@ -104,6 +104,7 @@ class Contacts(webapp2.RequestHandler):
 		user = Authentication.authenticate(self)
 		if user:
 			contacts = Contact.all()
+			contacts.order('name')
 
 			self.response.headers['Content-Type'] = 'application/json'
 			self.response.out.write(json.dumps([p.to_dict() for p in contacts]))
