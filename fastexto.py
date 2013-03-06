@@ -13,26 +13,27 @@ from weboob.capabilities.messages import Message,Thread
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
-class SMS(db.Model):
-	phonenumber = db.StringProperty(multiline=False)
-	message = db.StringProperty(multiline=True)
-	username = db.StringProperty(multiline=False)
-	date = db.DateTimeProperty()
-
-class Contact(db.Model):
-	name = db.StringProperty(multiline=False)
-	phonenumber = db.StringProperty(multiline=False)
-	def to_dict(self):
-		properties = {"id": self.key().id()}
-		for key in self.properties().keys():
-			properties.update({key:unicode(getattr(self, key))})
-		return properties
-
 class Account(db.Model):
 	username = db.StringProperty(multiline=False)
 	password = db.StringProperty(multiline=False)
 	def to_dict(self):
 		return dict([(p, unicode(getattr(self, p))) for p in self.properties()])
+
+class SMS(db.Model):
+	phonenumber = db.StringProperty(multiline=False)
+	message = db.StringProperty(multiline=True)
+	account = db.ReferenceProperty(Account)
+	date = db.DateTimeProperty()
+
+class Contact(db.Model):
+	name = db.StringProperty(multiline=False)
+	phonenumber = db.StringProperty(multiline=False)
+	account = db.ReferenceProperty(Account)
+	def to_dict(self):
+		properties = {"id": self.key().id()}
+		for key in self.properties().keys():
+			properties.update({key:unicode(getattr(self, key))})
+		return properties
 
 class Authentication:
 	@staticmethod
@@ -58,8 +59,7 @@ class Send(webapp2.RequestHandler):
 	def post(self):
 		user = Authentication.authenticate(self)
 		if user:
-			accountKey = db.Key.from_path('Account', user.user_id())
-			account = db.get(accountKey)
+			account = Account.get_by_key_name(user.user_id())
 			
 			params = json.loads(self.request.body)
 		
@@ -68,7 +68,7 @@ class Send(webapp2.RequestHandler):
 					sms = SMS()
 					sms.phonenumber = params['phonenumber']
 					sms.message = params['message']
-					sms.username = account.username
+					sms.account = account
 					sms.date = datetime.datetime.now()
 				
 					browser = SfrBrowser(account.username, account.password)
@@ -79,31 +79,37 @@ class Send(webapp2.RequestHandler):
 				logging.info("Error sending message for %s", user.nickname())
 				raise
 				
-class Account(webapp2.RequestHandler):
+class AccountManager(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
-			accountKey = db.Key.from_path('Account', user.user_id())
-			account = db.get(accountKey)
+			account = Account.get_by_key_name(user.user_id())
+			
 			self.response.headers['Content-Type'] = 'application/json'
-			self.response.out.write(json.dumps(account.to_dict()))
+			if account:
+				self.response.out.write(json.dumps(account.to_dict()))
+
 	def post(self):
 		user = Authentication.authenticate(self)
 		if user:
-			accountKey = db.Key.from_path('Account', user.user_id())
-			account = db.get(accountKey)
+			account = Account.get_by_key_name(user.user_id())
+
+			if account is None:
+				account = Account(key_name=user.user_id())
 			
-			params = json.loads(self.request.body)
-			
-			account.username = params['username'];
-			account.password = params['password'];
-			account.put();
+			params = json.loads(self.request.body)	
+			account.username = params['username']
+			account.password = params['password']
+			account.put()
 			
 class Contacts(webapp2.RequestHandler):
 	def get(self):
 		user = Authentication.authenticate(self)
 		if user:
+			account = Account.get_by_key_name(user.user_id())
+		
 			contacts = Contact.all()
+			contacts.filter('account =', account)
 			contacts.order('name')
 
 			self.response.headers['Content-Type'] = 'application/json'
@@ -115,9 +121,12 @@ class AddContact(webapp2.RequestHandler):
 		if user:
 			params = json.loads(self.request.body)
 			
+			account = Account.get_by_key_name(user.user_id())
+			
 			contact = Contact()
-			contact.name = params['name'];
-			contact.phonenumber = params['phonenumber'];
+			contact.name = params['name']
+			contact.phonenumber = params['phonenumber']
+			contact.account = account
 			contact.put()
 			
 class DeleteContact(webapp2.RequestHandler):
@@ -134,5 +143,5 @@ app = webapp2.WSGIApplication([
 	('/contact', AddContact),
 	('/contact/(\d+)', DeleteContact),
 	('/contacts', Contacts),
-	('/account', Account),
+	('/account', AccountManager),
 ], debug=True)
