@@ -64,7 +64,7 @@ class Send(webapp2.RequestHandler):
 			params = json.loads(self.request.body)
 		
 			try:
-				if account and account.username and account.password:	
+				if account:	
 					sms = SMS()
 					sms.phonenumber = params['phonenumber']
 					sms.message = params['message']
@@ -122,12 +122,12 @@ class AddContact(webapp2.RequestHandler):
 			params = json.loads(self.request.body)
 			
 			account = Account.get_by_key_name(user.user_id())
-			
-			contact = Contact()
-			contact.name = params['name']
-			contact.phonenumber = params['phonenumber']
-			contact.account = account
-			contact.put()
+			if account:
+				contact = Contact()
+				contact.name = params['name']
+				contact.phonenumber = params['phonenumber']
+				contact.account = account
+				contact.put()
 			
 class DeleteContact(webapp2.RequestHandler):
 	def get(self, id):

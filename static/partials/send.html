@@ -1,7 +1,7 @@
 <form name="sendForm" ng-submit="sendSMS()" accept-charset="UTF-8" autocomplete="off">
 	<fieldset>
 		<label>Contact </label>
-		<select ui-select2 ng-model="phonenumber" data-placeholder="Select Contact" style="width:220px">
+		<select ui-select2 ng-model="phonenumber" data-placeholder="Select Contact" style="width:220px" required>
 			<option></option>
 			<option ng-repeat="contact in contacts" value="{{contact.phonenumber}}">{{contact.name}}</option>
 		</select>
