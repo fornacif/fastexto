@@ -14,15 +14,12 @@ function MenuController($scope, $location) {
 }
   
 function SendController($scope, Contacts, Send) {
-	$scope.alerts = [
-    { type: 'error', msg: 'Error sending SMS' }, 
-  ];
-
 	$scope.reset = function() {
 		$scope.phonenumber = "";
 		$scope.message = "";
 		$scope.messageNumber = 0;
 		$scope.messageLength = 0;
+		$scope.error = null;
   }
 
 	$scope.reset();
@@ -35,7 +32,8 @@ function SendController($scope, Contacts, Send) {
 				$.unblockUI();
 				$scope.reset();
 			},
-			function () {  
+			function () {
+				$scope.error = "Error sending SMS";
 				$.unblockUI();
 			});
   };
@@ -56,6 +54,7 @@ function ContactsController($scope, Contacts, Contact) {
 	$scope.reset = function() {
 		$scope.name = "";
 		$scope.phonenumber = "";	
+		$scope.error = null;
   }
 
 	$scope.contacts = loadContacts(Contacts);
@@ -68,7 +67,8 @@ function ContactsController($scope, Contacts, Contact) {
 				$scope.reset();
 				$scope.contacts = loadContacts(Contacts);
 			},
-			function () {  
+			function () {
+				$scope.error = "Error adding contact";
 				$.unblockUI();
 			});
 	};
@@ -78,20 +78,28 @@ function ContactsController($scope, Contacts, Contact) {
 		Contact.remove({id:id},
 			function () {
 				$.unblockUI();
+				$scope.reset();
 				$scope.contacts = loadContacts(Contacts);
 			},
 			function () {  
+				$scope.error = "Error deleting contact";
 				$.unblockUI();
 			});
 	};
 }
 
 function AccountController($scope, Account) {
+	$scope.reset = function() {
+		$scope.error = null;
+  }
+
 	$.blockUI({"message" : "<h3>Loading account...</h3>"});
 	$scope.account = Account.query({}, function () {
+		$scope.reset();
 		$.unblockUI();
 	},
-	function () {  
+	function () { 
+		$scope.error = "Error loading account";
 		$.unblockUI();
 	});
 
@@ -100,8 +108,10 @@ function AccountController($scope, Account) {
 		Account.update($scope.account,
 			function () {
 				$.unblockUI();
+				$scope.reset();
 			},
 			function () {  
+				$scope.error = "Error updating account";
 				$.unblockUI();
 			});
 	};
@@ -113,7 +123,7 @@ function loadContacts (Contacts) {
 			function () {
 				$.unblockUI();
 			},
-			function () {  
+			function () {
 				$.unblockUI();
 			});
 }

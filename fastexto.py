@@ -75,6 +75,8 @@ class Send(webapp2.RequestHandler):
 					logging.info("Sending message to %s", sms.phonenumber)
 					browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
 					sms.put()
+				else:
+					self.response.set_status(404)
 			except:
 				logging.info("Error sending message for %s", user.nickname())
 				raise
@@ -100,6 +102,9 @@ class AccountManager(webapp2.RequestHandler):
 			params = json.loads(self.request.body)	
 			account.username = params['username']
 			account.password = params['password']
+			
+			browser = SfrBrowser(account.username, account.password)
+
 			account.put()
 			
 class Contacts(webapp2.RequestHandler):
@@ -128,6 +133,8 @@ class AddContact(webapp2.RequestHandler):
 				contact.phonenumber = params['phonenumber']
 				contact.account = account
 				contact.put()
+			else:
+				self.response.set_status(404)
 			
 class DeleteContact(webapp2.RequestHandler):
 	def get(self, id):

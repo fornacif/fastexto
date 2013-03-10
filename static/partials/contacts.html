@@ -6,6 +6,7 @@
 		<input type="tel" ng-model="phonenumber" placeholder="01 02 03 04 05" ui-mask="'99 99 99 99 99'"required />
 		<div class="form-actions">
 			<button type="submit" class="btn btn-primary" ng-disabled="contactForm.$invalid">Add contact</button>
+			<span class="text-error">{{error}}</span>
 		</div>
 	</fieldset>
 </form>

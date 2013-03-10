@@ -10,6 +10,7 @@
 		<label>{{messageNumber}} SMS ({{messageLength}} chars)</label>
 		<div class="form-actions">
 			<button type="submit" class="btn btn-primary" ng-disabled="sendForm.$invalid">Send SMS</button>
+			<span class="text-error">{{error}}</span>
 		</div>
 	</fieldset>
 </form>
