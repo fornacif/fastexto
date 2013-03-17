@@ -4,6 +4,7 @@ import datetime
 import jinja2
 import os
 import json
+import base64
 
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -67,13 +68,14 @@ class Send(webapp2.RequestHandler):
 				if account:	
 					sms = SMS()
 					sms.phonenumber = params['phonenumber']
-					sms.message = params['message']
+					sms.message = base64.b64encode(params['message'])
 					sms.account = account
 					sms.date = datetime.datetime.now()
 				
-					browser = SfrBrowser(account.username, account.password)
+					browser = SfrBrowser(account.username, base64.b64decode(account.password))
 					logging.info("Sending message to %s", sms.phonenumber)
-					browser.post_message(Message(Thread(sms.phonenumber), 0, content=sms.message))
+					browser.post_message(Message(Thread(params['phonenumber']), 0, content=params['message']))
+
 					sms.put()
 				else:
 					self.response.set_status(404)
@@ -86,6 +88,7 @@ class AccountManager(webapp2.RequestHandler):
 		user = Authentication.authenticate(self)
 		if user:
 			account = Account.get_by_key_name(user.user_id())
+			account.password = ""
 			
 			self.response.headers['Content-Type'] = 'application/json'
 			if account:
@@ -101,9 +104,9 @@ class AccountManager(webapp2.RequestHandler):
 			
 			params = json.loads(self.request.body)	
 			account.username = params['username']
-			account.password = params['password']
+			account.password = base64.b64encode(params['password'])
 			
-			browser = SfrBrowser(account.username, account.password)
+			browser = SfrBrowser(params['username'], params['password'])
 
 			account.put()
 			

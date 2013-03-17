@@ -91,6 +91,7 @@ function ContactsController($scope, Contacts, Contact) {
 function AccountController($scope, Account) {
 	$scope.reset = function() {
 		$scope.error = null;
+		$scope.account.password = null;
   }
 
 	$.blockUI({"message" : "<h3>Loading account...</h3>"});
