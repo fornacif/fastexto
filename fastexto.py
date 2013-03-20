@@ -68,19 +68,19 @@ class Send(webapp2.RequestHandler):
 				if account:	
 					sms = SMS()
 					sms.phonenumber = params['phonenumber']
-					sms.message = base64.b64encode(params['message'])
+					sms.message = base64.b64encode(params['message'].encode('UTF-8'))
 					sms.account = account
 					sms.date = datetime.datetime.now()
 				
+					logging.info("Sending message '%s' to %s", sms.message, sms.phonenumber)
 					browser = SfrBrowser(account.username, base64.b64decode(account.password))
-					logging.info("Sending message to %s", sms.phonenumber)
 					browser.post_message(Message(Thread(params['phonenumber']), 0, content=params['message']))
 
 					sms.put()
 				else:
 					self.response.set_status(404)
 			except:
-				logging.info("Error sending message for %s", user.nickname())
+				logging.error("Error sending message for %s", user.nickname())
 				raise
 				
 class AccountManager(webapp2.RequestHandler):
