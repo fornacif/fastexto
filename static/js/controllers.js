@@ -1,4 +1,4 @@
-angular.module('fastexto', ['send', 'contacts', 'contact', 'account', 'ui']).
+angular.module('fastexto', ['send', 'contacts', 'contact', 'account', 'ui.select2', 'ui.mask']).
 	config(function($routeProvider) {
 		$routeProvider.
 			when('/', {controller:SendController, templateUrl:'static/partials/send.html'}).
